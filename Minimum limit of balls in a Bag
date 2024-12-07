@@ -1,0 +1,26 @@
+/**
+ * @param {number[]} nums
+ * @param {number} maxOperations
+ * @return {number}
+ */
+var minimumSize = function(nums, maxOperations) {
+    let left = 1;
+    let right = Math.max(...nums);
+    while (left < right) {
+        const mid = (left + right) >> 1;
+        console.log(mid)
+        let cnt = 0;
+        for (const x of nums) {
+            cnt += Math.floor((x - 1) / mid);
+            console.log(cnt)
+        }
+        if (cnt <= maxOperations) {
+            right = mid;
+        } else {
+            left = mid + 1;
+        }
+            console.log(right,left)
+
+    }
+    return left;
+};
