@@ -1,0 +1,28 @@
+/**
+ * @param {number[]} gifts
+ * @param {number} k
+ * @return {number}
+ */
+var pickGifts = function(gifts, k) {
+       const maxQueue = new MaxPriorityQueue();
+
+    // Enqueue all gifts into the priority queue.
+    gifts.forEach(value => maxQueue.enqueue(value));
+
+    // Perform k replacements of the max gift value with its square root.
+    while (k > 0) {
+        const maxGiftValue = maxQueue.dequeue().element; // Take out the max gift value.
+        const adjustedValue = Math.floor(Math.sqrt(maxGiftValue)); // Calculate its square root.
+        maxQueue.enqueue(adjustedValue); // Put the adjusted value back into the queue.
+        k -= 1; // Decrement the number of replacements left.
+    }
+
+    // Sum up all the values that are left in the priority queue.
+    let totalValue = 0;
+    while (!maxQueue.isEmpty()) {
+        totalValue += maxQueue.dequeue().element;
+    }
+
+    // Return the total sum of the gift values after k adjustments.
+    return totalValue;
+};
