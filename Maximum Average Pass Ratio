@@ -1,0 +1,103 @@
+class MaxHeap {
+    constructor() {
+        this.data = [];
+    }
+
+    // Insert an element into the heap
+    push(item) {
+        this.data.push(item);
+        this._bubbleUp(this.data.length - 1);
+    }
+
+    // Remove and return the maximum element
+    pop() {
+        if (this.size() === 1) return this.data.pop();
+        const max = this.data[0];
+        this.data[0] = this.data.pop();
+        this._sinkDown(0);
+        return max;
+    }
+
+    // Return the size of the heap
+    size() {
+        return this.data.length;
+    }
+
+    // Helper to bubble up the element at index `i`
+    _bubbleUp(i) {
+        const element = this.data[i];
+        while (i > 0) {
+            const parentIndex = Math.floor((i - 1) / 2);
+            const parent = this.data[parentIndex];
+            if (element[0] <= parent[0]) break;
+            this.data[i] = parent;
+            this.data[parentIndex] = element;
+            i = parentIndex;
+        }
+    }
+
+    // Helper to sink down the element at index `i`
+    _sinkDown(i) {
+        const length = this.data.length;
+        const element = this.data[i];
+        while (true) {
+            let leftChildIndex = 2 * i + 1;
+            let rightChildIndex = 2 * i + 2;
+            let swapIndex = null;
+
+            if (leftChildIndex < length) {
+                const leftChild = this.data[leftChildIndex];
+                if (leftChild[0] > element[0]) {
+                    swapIndex = leftChildIndex;
+                }
+            }
+
+            if (rightChildIndex < length) {
+                const rightChild = this.data[rightChildIndex];
+                if (
+                    (swapIndex === null && rightChild[0] > element[0]) ||
+                    (swapIndex !== null && rightChild[0] > this.data[swapIndex][0])
+                ) {
+                    swapIndex = rightChildIndex;
+                }
+            }
+
+            if (swapIndex === null) break;
+
+            this.data[i] = this.data[swapIndex];
+            this.data[swapIndex] = element;
+            i = swapIndex;
+        }
+    }
+}
+
+var maxAverageRatio = function(classes, extraStudents) {
+    const passRatioGain = (passi, totali) => {
+        return (passi + 1) / (totali + 1) - passi / totali;
+    };
+
+    // Create a max heap
+    const heap = new MaxHeap();
+    for (const [passi, totali] of classes) {
+        const gain = passRatioGain(passi, totali);
+        heap.push([gain, passi, totali]);
+    }
+
+    // Distribute the extra students
+    for (let i = 0; i < extraStudents; i++) {
+        const [_, passi, totali] = heap.pop();
+        const newPassi = passi + 1;
+        const newTotali = totali + 1;
+        const newGain = passRatioGain(newPassi, newTotali);
+        heap.push([newGain, newPassi, newTotali]);
+    }
+
+    // Calculate the final average pass ratio
+    let totalRatio = 0;
+    while (heap.size() > 0) {
+        const [_, passi, totali] = heap.pop();
+        totalRatio += passi / totali;
+    }
+
+    return totalRatio / classes.length;
+};
