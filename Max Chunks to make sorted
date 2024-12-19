@@ -1,0 +1,24 @@
+/**
+ * @param {number[]} arr
+ * @return {number}
+ */
+var maxChunksToSorted = function(arr) {
+     const n = arr.length; // The length of the input array.
+    let answer= 0; // The number of chunks that the input array can be split into.
+    let currentMax = 0; // The maximum value found so far in the array up to the current index.
+
+    // Iterate through the array to find chunks.
+    for (let i = 0; i < n; i++) {
+        // Update the current maximum value found.
+        currentMax = Math.max(arr[i], currentMax);
+
+        // If the current maximum is equal to the index, a sorted chunk is found.
+        // This is based on the property that in a sorted array of distinct numbers ranging from 0 to n-1,
+        // the number at index i should be i itself, if the chunks before are correctly placed.
+        if (currentMax === i) {
+            answer++; // Increment the answer as we can split here.
+        }
+    }
+    // Return the number of sorted chunks possible.
+    return answer;
+};
