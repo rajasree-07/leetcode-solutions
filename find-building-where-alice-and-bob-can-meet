@@ -1,0 +1,89 @@
+/**
+ * @param {number[]} heights
+ * @param {number[][]} queries
+ * @return {number[]}
+ */
+class BinaryIndexedTree {
+    constructor(n) {
+        this.n = n;
+        this.c = Array(n + 1).fill(Number.MAX_SAFE_INTEGER); // Initialize BIT with a large value
+    }
+
+    // Updates the BIT with the minimum value at position x
+    update(x, v) {
+        while (x <= this.n) {
+            this.c[x] = Math.min(this.c[x], v);
+            x += x & -x; // Move to the next index in BIT
+        }
+    }
+
+    // Queries the minimum value in the range [1, x]
+    query(x) {
+        let mi = Number.MAX_SAFE_INTEGER;
+        while (x > 0) {
+            mi = Math.min(mi, this.c[x]);
+            x -= x & -x; // Move to the parent index in BIT
+        }
+        return mi === Number.MAX_SAFE_INTEGER ? -1 : mi; // Return -1 if no valid result
+    }
+}
+
+function leftmostBuildingQueries(heights, queries) {
+    const n = heights.length;
+    const m = queries.length;
+
+    // Normalize queries to ensure l <= r
+    for (const q of queries) {
+        if (q[0] > q[1]) {
+            [q[0], q[1]] = [q[1], q[0]];
+        }
+    }
+
+    // Index array for sorting queries
+    const idx = Array.from({ length: m }, (_, i) => i);
+    idx.sort((i, j) => queries[j][1] - queries[i][1]); // Sort queries by r in descending order
+
+    // Initialize Binary Indexed Tree
+    const tree = new BinaryIndexedTree(n);
+    const ans = Array(m).fill(-1);
+
+    // Preprocess heights by sorting
+    const sortedHeights = [...heights].sort((a, b) => a - b);
+
+    // Binary search function to find the position of x in sorted heights
+    const search = (x) => {
+        let l = 0, r = n;
+        while (l < r) {
+            const mid = Math.floor((l + r) / 2);
+            if (sortedHeights[mid] >= x) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return l;
+    };
+
+    let j = n - 1; // Start from the last building
+
+    // Process each query
+    for (const i of idx) {
+        const [l, r] = queries[i];
+        // Update BIT with buildings beyond the current query range
+        while (j > r) {
+            const k = n - search(heights[j]) + 1; // Calculate the position in BIT
+            tree.update(k, j); // Update BIT
+            --j;
+        }
+
+        // Handle the query
+        if (l === r || heights[l] < heights[r]) {
+            ans[i] = r; // If conditions directly satisfy, set the result to r
+        } else {
+            const k = n - search(heights[l]);
+            ans[i] = tree.query(k); // Query BIT for the leftmost valid building
+        }
+    }
+
+    return ans; // Return the results for all queries
+}
