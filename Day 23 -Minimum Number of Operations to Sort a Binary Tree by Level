@@ -1,0 +1,60 @@
+// Function to calculate the minimum number of operations needed
+// to sort the binary tree by levels from the smallest to the
+// largest value.
+// @param {TreeNode | null} root - The root of the binary tree.
+// @returns The minimum number of operations required.
+function minimumOperations(root){
+  
+    // Queue to hold the nodes for level-order traversal.
+    const nodeQueue = [root];
+  
+    // Counter to keep track of the number of operations performed.
+    let operationsCount = 0;
+  
+    // Iterating over the tree using level-order traversal.
+    while (nodeQueue.length !== 0) {
+        // Number of nodes at the current level.
+        const levelNodeCount = nodeQueue.length;
+      
+        // Array to store the values of the nodes at the current level
+        // for sorting purposes.
+        const currentLevelValues = [];
+      
+        // Extracting all nodes at the current level.
+        for (let i = 0; i < levelNodeCount; i++) {
+            const currentNode = nodeQueue.shift();
+            if (currentNode !== null) {
+                // Store the current node's value.
+                currentLevelValues.push(currentNode.val);
+                // Queue the left and right children if they are not null.
+                if (currentNode.left !== null) {
+                    nodeQueue.push(currentNode.left);
+                }
+                if (currentNode.right !== null) {
+                    nodeQueue.push(currentNode.right);
+                }
+            }
+        }
+      
+        // Performing selection sort on the current level's values.
+        for (let i = 0; i < levelNodeCount - 1; i++) {
+            // Assuming the minimum value is at the current index.
+            let minIndex = i;
+            // Finding the actual minimum value's index.
+            for (let j = i + 1; j < levelNodeCount; j++) {
+                if (currentLevelValues[j] < currentLevelValues[minIndex]) {
+                    minIndex = j;
+                }
+            }
+            // If the assumed minimum value's index is not the actual minimum,
+            // swap them and count the operation.
+            if (i !== minIndex) {
+                [currentLevelValues[i], currentLevelValues[minIndex]] = [currentLevelValues[minIndex], currentLevelValues[i]];
+                operationsCount++;
+            }
+        }
+    }
+    // Return the total number of operations performed after
+    // sorting all levels.
+    return operationsCount;
+}
