@@ -1,0 +1,55 @@
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number[]}
+ */
+var maxSumOfThreeSubarrays = function(nums, k) {
+   let answer = new Array(3); // This will store the starting indices of the three subarrays
+
+    // Initialize sums of each subarray and maximum sum variables
+    let currentSum = 0, firstSubarraySum= 0;
+    let secondSubarraySum = 0, thirdSubarraySum = 0;
+    let maxFirstSubarraySum = 0, maxFirstSecondSum = 0;
+
+    // Indices for tracking the maximum sums for subarrays
+    let maxFirstIndex = 0, maxFirstSecondIndex1 = 0;
+    let maxFirstSecondIndex2= 0;
+
+    // Loop through the array, starting from the end of the possible third subarray
+    for (let i = k * 2; i < nums.length; ++i) {
+        // Increment the sum of each subarray with the next element in the sequence
+        firstSubarraySum += nums[i - k * 2];
+        secondSubarraySum += nums[i - k];
+        thirdSubarraySum += nums[i];
+
+        // If we have completed the subarrays (reached full length of k for each)
+        if (i >= k * 3 - 1) {
+            // Update maximum sum and index for the first subarray if needed
+            if (firstSubarraySum > maxFirstSubarraySum) {
+                maxFirstSubarraySum = firstSubarraySum;
+                maxFirstIndex = i - k * 3 + 1;
+            }
+
+            // Update the sum and indices for the first and second subarray
+            if (maxFirstSubarraySum + secondSubarraySum > maxFirstSecondSum) {
+                maxFirstSecondSum = maxFirstSubarraySum + secondSubarraySum;
+                maxFirstSecondIndex1 = maxFirstIndex;
+                maxFirstSecondIndex2 = i - k * 2 + 1;
+            }
+
+            // Update the total sum and starting indices for all three subarrays
+            if (maxFirstSecondSum + thirdSubarraySum > currentSum) {
+                currentSum = maxFirstSecondSum + thirdSubarraySum;
+                answer = [maxFirstSecondIndex1, maxFirstSecondIndex2, i - k + 1];
+            }
+
+            // Move the window forward by subtracting the outgoing element from each subarray sum
+            firstSubarraySum -= nums[i - k * 3 + 1];
+            secondSubarraySum -= nums[i - k * 2 + 1];
+            thirdSubarraySum -= nums[i - k + 1];
+        }
+    }
+  
+    return answer; // Return the starting indices of the subarrays
+
+};
