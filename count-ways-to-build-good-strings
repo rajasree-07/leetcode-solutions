@@ -1,0 +1,33 @@
+const MOD = 1e9 + 7;
+
+// Memoization table, using a Map to associate indices with their counts
+let memo: Map<number, number> = new Map();
+
+// Count the good strings with given constraints using memoization
+function countGoodStrings(low: number, high: number, zero: number, one: number): number {
+    // Clear the memoization table before a new computation
+    memo.clear();
+  
+    // Helper function for DFS (Depth-First Search) with memoization
+    function dfs(current: number): number {
+        // Base case: if the current value is greater than 'high', no good strings can be formed
+        if (current > high) return 0;
+      
+        // If the current number of good strings has been calculated before, return the stored result
+        if (memo.has(current)) return memo.get(current)!;
+      
+        // Initialize count starting with 1 if 'current' is within the range [low, high]
+        let count: number = (current >= low && current <= high) ? 1 : 0;
+      
+        // Recursively count the good strings by adding 'zero' and 'one' to the current value 'current'
+        count = (count + dfs(current + zero) + dfs(current + one)) % MOD;
+      
+        // Store the result in the memoization table
+        memo.set(current, count);
+      
+        return count;
+    }
+  
+    // Start the DFS from 0 and return the total count
+    return dfs(0);
+}
