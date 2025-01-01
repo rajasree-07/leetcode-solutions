@@ -1,0 +1,23 @@
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var maxScore = function(s) {
+    let zeroscount=0,totalcount=0,onescount=0,bestscore=-Infinity;
+
+    for( const char of s){
+        if(char=="1") totalcount++
+    }
+    for(let i=0;i<s.length-1;i++){
+        if(s[i]=="0"){
+            zeroscount++
+        }
+        else{
+            onescount++
+        }
+
+    const currentScore=zeroscount+(totalcount-onescount);
+   bestscore=Math.max(bestscore,currentScore);
+    }
+   return bestscore;
+};
